@@ -1,0 +1,122 @@
+<%- include('../partials/header.ejs') %>
+
+<div class="breadcrumb-container">
+  <a href="/admin/products" class="back-link">&larr; Back to Admin Dashboard</a>
+</div>
+
+<div class="admin-form-container">
+  <div class="form-card">
+    <h2><%= editing ? 'Edit Product' : 'Add New Product' %></h2>
+    <p class="form-subtitle">Fill in the product details below. You can either upload a local image file or supply an external image URL.</p>
+
+    <!-- Error Alert Message -->
+    <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+      <div class="alert alert-error">
+        <span class="alert-icon">⚠️</span>
+        <span class="alert-text"><%= errorMessage %></span>
+      </div>
+    <% } %>
+
+    <form 
+      class="product-form" 
+      action="<%= editing ? '/admin/edit-product' : '/admin/add-product' %>" 
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <!-- Hidden field for product ID if editing -->
+      <% if (editing) { %>
+        <input type="hidden" name="productId" value="<%= product._id %>">
+      <% } %>
+
+      <!-- Title Input -->
+      <div class="form-control">
+        <label for="title">Product Title</label>
+        <input 
+          type="text" 
+          id="title" 
+          name="title" 
+          placeholder="e.g. Campus Hoodie" 
+          value="<%= editing ? product.title : '' %>"
+          required
+        >
+      </div>
+
+      <!-- Price Input -->
+      <div class="form-control">
+        <label for="price">Price ($)</label>
+        <input 
+          type="number" 
+          id="price" 
+          name="price" 
+          step="0.01" 
+          min="0.01"
+          placeholder="e.g. 29.99" 
+          value="<%= editing ? product.price : '' %>"
+          required
+        >
+      </div>
+
+      <!-- Category Input -->
+      <div class="form-control">
+        <label for="category">Category</label>
+        <select id="category" name="category">
+          <option value="Clothing" <%= editing && product.category === 'Clothing' ? 'selected' : '' %>>Clothing</option>
+          <option value="Books & Academics" <%= editing && product.category === 'Books & Academics' ? 'selected' : '' %>>Books & Academics</option>
+          <option value="Electronics" <%= editing && product.category === 'Electronics' ? 'selected' : '' %>>Electronics</option>
+          <option value="Dorm Essentials" <%= editing && product.category === 'Dorm Essentials' ? 'selected' : '' %>>Dorm Essentials</option>
+          <option value="Snacks & Food" <%= editing && product.category === 'Snacks & Food' ? 'selected' : '' %>>Snacks & Food</option>
+          <option value="General" <%= editing && product.category === 'General' ? 'selected' : '' %>>General</option>
+        </select>
+      </div>
+
+      <!-- Image Source Selection -->
+      <div class="form-control image-upload-group">
+        <label>Product Image Source</label>
+        
+        <div class="image-tabs-inputs">
+          <div class="tab-input-item">
+            <label for="imageFile" class="sub-label">1. Upload Image File</label>
+            <input type="file" id="imageFile" name="image" accept="image/*">
+            <% if (editing && product.imageUrl) { %>
+              <div class="current-image-preview">
+                <span class="sub-label">Current Image Preview:</span>
+                <img src="<%= product.imageUrl %>" alt="Current Product Image" class="thumb-preview">
+              </div>
+            <% } %>
+          </div>
+
+          <div class="divider-or"><span>OR</span></div>
+
+          <div class="tab-input-item">
+            <label for="imageUrl" class="sub-label">2. Or Paste Image URL</label>
+            <input 
+              type="text" 
+              id="imageUrl" 
+              name="imageUrl" 
+              placeholder="https://images.unsplash.com/... or /images/..."
+              value="<%= (editing && !product.imageUrl.startsWith('/uploads/')) ? product.imageUrl : '' %>"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Description Input -->
+      <div class="form-control">
+        <label for="description">Description</label>
+        <textarea 
+          id="description" 
+          name="description" 
+          rows="5" 
+          placeholder="Describe the product features, quality, size, and other details..."
+          required
+        ><%= editing ? product.description : '' %></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary form-submit-btn">
+        <%= editing ? 'Update Product' : 'Add Product' %>
+      </button>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer.ejs') %>

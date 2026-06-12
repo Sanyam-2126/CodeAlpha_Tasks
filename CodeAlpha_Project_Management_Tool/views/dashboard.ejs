@@ -1,0 +1,117 @@
+<%- include('partials/header', { pageTitle: 'Dashboard', activeView: 'dashboard' }) %>
+
+<!-- Stats Summary Grid -->
+<div class="stats-grid">
+  <div class="stat-card card-purple">
+    <div class="stat-icon">
+      <i class="fa-solid fa-folder"></i>
+    </div>
+    <div class="stat-info">
+      <h3>Total Projects</h3>
+      <span class="stat-value"><%= stats.totalProjects %></span>
+    </div>
+  </div>
+  <div class="stat-card card-blue">
+    <div class="stat-icon">
+      <i class="fa-solid fa-list-check"></i>
+    </div>
+    <div class="stat-info">
+      <h3>Total Tasks</h3>
+      <span class="stat-value"><%= stats.totalTasks %></span>
+    </div>
+  </div>
+  <div class="stat-card card-orange">
+    <div class="stat-icon">
+      <i class="fa-solid fa-spinner"></i>
+    </div>
+    <div class="stat-info">
+      <h3>Pending Tasks</h3>
+      <span class="stat-value"><%= stats.pendingTasks %></span>
+    </div>
+  </div>
+  <div class="stat-card card-green">
+    <div class="stat-icon">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div class="stat-info">
+      <h3>Completed Tasks</h3>
+      <span class="stat-value"><%= stats.completedTasks %></span>
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard Panels -->
+<div class="dashboard-details">
+  <!-- Progress Panel -->
+  <div class="dashboard-panel panel-progress">
+    <h2>Overall Completion Progress</h2>
+    <div class="progress-container">
+      <% 
+        let completionPercent = 0;
+        if (stats.totalTasks > 0) {
+          completionPercent = Math.round((stats.completedTasks / stats.totalTasks) * 100);
+        }
+      %>
+      <div class="progress-circle-wrapper">
+        <svg class="progress-ring" width="160" height="160">
+          <circle class="progress-ring__circle-bg" stroke="#e2e8f0" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
+          <% 
+            const circumference = 2 * Math.PI * 70; // 439.8
+            const strokeDashoffset = circumference - (completionPercent / 100) * circumference;
+          %>
+          <circle class="progress-ring__circle" stroke="var(--color-primary)" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"
+                  style="stroke-dasharray: <%= circumference %> <%= circumference %>; stroke-dashoffset: <%= strokeDashoffset %>;" />
+        </svg>
+        <div class="progress-text"><%= completionPercent %>%</div>
+      </div>
+
+      <div class="progress-legend">
+        <div class="legend-item"><span class="bullet bullet-todo"></span> Pending: <strong><%= stats.pendingTasks %></strong></div>
+        <div class="legend-item"><span class="bullet bullet-completed"></span> Completed: <strong><%= stats.completedTasks %></strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upcoming Tasks Panel -->
+  <div class="dashboard-panel panel-tasks">
+    <div class="panel-header-row">
+      <h2>Upcoming Tasks (Pending)</h2>
+      <a href="/projects" class="view-all-link">Browse Projects</a>
+    </div>
+
+    <div class="upcoming-tasks-list">
+      <% if (upcomingTasks.length === 0) { %>
+        <div class="empty-state">No pending tasks found. All caught up!</div>
+      <% } else { %>
+        <% upcomingTasks.forEach(task => { %>
+          <% 
+            const isOverdue = task.dueDate && new Date(task.dueDate) < new Date();
+            let dateStr = 'No due date';
+            if (task.dueDate) {
+              dateStr = new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+          %>
+          <div class="dashboard-task-item" onclick="location.href='/tasks/<%= task._id %>'">
+            <div class="dash-task-left">
+              <span class="dash-task-title"><%= task.title %></span>
+              <div class="dash-task-meta">
+                <span class="dash-task-project">
+                  <i class="fa-solid fa-folder-open"></i> <%= task.project ? task.project.name : 'Unknown Project' %>
+                </span>
+                <span class="<%= isOverdue ? 'task-card-date overdue' : '' %>">
+                  <i class="fa-regular fa-calendar"></i> <%= dateStr %> <%= isOverdue ? '(Overdue)' : '' %>
+                </span>
+              </div>
+            </div>
+            <div class="dash-task-right">
+              <span class="badge-priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+              <span class="badge" style="background-color: var(--todo-bg); color: var(--todo-text);"><%= task.status %></span>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

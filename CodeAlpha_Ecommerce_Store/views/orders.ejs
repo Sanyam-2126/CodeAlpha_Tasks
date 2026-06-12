@@ -1,0 +1,71 @@
+<%- include('partials/header.ejs') %>
+
+<div class="orders-page-header">
+  <h1>Your Order History</h1>
+  <p>Track your past purchases and delivery status.</p>
+</div>
+
+<div class="orders-container">
+  <% if (orders.length > 0) { %>
+    <div class="orders-list">
+      <% orders.forEach(order => { %>
+        <div class="order-card">
+          <!-- Order Header details -->
+          <div class="order-header">
+            <div class="header-group">
+              <span class="label">Order ID</span>
+              <span class="value order-id-val">#<%= order._id %></span>
+            </div>
+            <div class="header-group">
+              <span class="label">Date Placed</span>
+              <span class="value"><%= new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+            </div>
+            <div class="header-group">
+              <span class="label">Total Amount</span>
+              <span class="value price-val">$<%= order.totalPrice.toFixed(2) %></span>
+            </div>
+            <div class="header-group">
+              <span class="label">Status</span>
+              <span class="status-badge status-<%= order.status.toLowerCase() %>"><%= order.status %></span>
+            </div>
+            <% if (order.status === 'Pending' || order.status === 'Processing') { %>
+              <div class="header-group">
+                <span class="label">Action</span>
+                <form action="/order/cancel" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order?');" class="inline-form">
+                  <input type="hidden" name="orderId" value="<%= order._id %>">
+                  <button type="submit" class="btn-delete btn-xs" style="margin-top: 2px;">Cancel Order</button>
+                </form>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- Order Items detail listing -->
+          <div class="order-body">
+            <h4>Ordered Items</h4>
+            <ul class="order-items-list">
+              <% order.products.forEach(item => { %>
+                <li class="order-item-detail">
+                  <div class="item-info">
+                    <span class="item-title"><%= item.product.title %></span>
+                    <span class="item-qty">Qty: <%= item.quantity %></span>
+                  </div>
+                  <span class="item-price">$<%= (item.product.price * item.quantity).toFixed(2) %></span>
+                </li>
+              <% }) %>
+            </ul>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <!-- Empty Orders State -->
+    <div class="empty-state">
+      <span class="empty-icon">📦</span>
+      <h3>No Orders Found</h3>
+      <p>You haven't placed any orders yet. Make your first purchase!</p>
+      <a href="/" class="btn btn-primary mt-1">Go to Shop</a>
+    </div>
+  <% } %>
+</div>
+
+<%- include('partials/footer.ejs') %>

@@ -1,0 +1,25 @@
+<% 
+  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'Completed';
+  let dateFormatted = 'No due date';
+  if (task.dueDate) {
+    dateFormatted = new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+%>
+<div class="task-card" onclick="location.href='/tasks/<%= task._id %>'">
+  <div class="task-card-header">
+    <span class="task-card-priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+  </div>
+  <h4><%= task.title %></h4>
+  <p class="task-card-desc"><%= task.description || 'No description provided.' %></p>
+  <div class="task-card-footer">
+    <div class="task-card-date <%= isOverdue ? 'overdue' : '' %>">
+      <i class="fa-regular fa-calendar"></i>
+      <span><%= dateFormatted %> <%= isOverdue ? '(Overdue)' : '' %></span>
+    </div>
+    <div class="task-card-assignee">
+      <div class="avatar avatar-sm" title="Assigned to: <%= task.assignedTo ? task.assignedTo.username : 'Unassigned' %>">
+        <%= task.assignedTo ? task.assignedTo.username.charAt(0).toUpperCase() : '?' %>
+      </div>
+    </div>
+  </div>
+</div>

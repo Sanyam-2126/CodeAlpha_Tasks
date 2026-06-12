@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProjectManager - CodeAlpha</title>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Toast/Flash Alert Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- App Wrapper -->
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="app-logo">
+          <i class="fa-solid fa-cubes-stacked"></i>
+          <span>ProjectManager</span>
+        </div>
+        <div class="sidebar-badge">Beta v1.0</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/dashboard" class="nav-item <%= typeof activeView !== 'undefined' && activeView === 'dashboard' ? 'active' : '' %>">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/projects" class="nav-item <%= typeof activeView !== 'undefined' && activeView === 'projects' ? 'active' : '' %>">
+          <i class="fa-solid fa-folder-open"></i>
+          <span>Projects</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="avatar"><%= user && user.username ? user.username.charAt(0).toUpperCase() : 'U' %></div>
+          <div class="user-info">
+            <span class="username"><%= user && user.username ? user.username : 'Username' %></span>
+            <span class="user-role">Intern Developer</span>
+          </div>
+        </div>
+        <a href="/auth/logout" class="btn-logout" title="Log Out">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="main-panel">
+      <!-- Top Header -->
+      <header class="top-header">
+        <div class="header-left">
+          <h1><%= typeof pageTitle !== 'undefined' ? pageTitle : 'Project Workspace' %></h1>
+        </div>
+        <div class="header-right">
+          <!-- Quick Action Buttons -->
+          <a href="/projects" class="btn btn-secondary">
+            <i class="fa-solid fa-folder-plus"></i>
+            <span>Projects Grid</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- View Wrapper -->
+      <div class="view-content">
+        <!-- Render any success/error alerts -->
+        <%- include('messages') %>

@@ -1,0 +1,24 @@
+  </main> <!-- Closing main-content -->
+
+  <!-- Site Footer -->
+  <footer class="main-footer">
+    <div class="footer-container">
+      <p>&copy; <%= new Date().getFullYear() %> CampusMart. Created for Academic Project Purposes.</p>
+      <p class="developer-credit">Developed by: Student | Node.js, Express, MongoDB, EJS, and Vanilla CSS</p>
+    </div>
+  </footer>
+
+  <!-- Basic Client-side Logic for Hamburger Menu -->
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const mainNav = document.getElementById('mainNav');
+
+    if (menuToggle && mainNav) {
+      menuToggle.addEventListener('click', () => {
+        mainNav.classList.toggle('open');
+        menuToggle.classList.toggle('active');
+      });
+    }
+  </script>
+</body>
+</html>

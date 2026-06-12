@@ -1,0 +1,107 @@
+<%- include('../partials/header', { pageTitle: 'Projects Space', activeView: 'projects' }) %>
+
+<div class="projects-layout">
+  <!-- Left Side: Create Project Form Panel -->
+  <div class="projects-sidebar-form">
+    <div class="panel-card">
+      <h2><i class="fa-solid fa-folder-plus"></i> Create New Project</h2>
+      <form action="/projects" method="POST" class="auth-form" style="padding: 0; margin-top: 16px;">
+        <div class="form-group">
+          <label for="new-project-name">Project Name <span class="required">*</span></label>
+          <input type="text" name="name" id="new-project-name" placeholder="e.g. Mobile Application" required maxlength="100">
+        </div>
+        <div class="form-group">
+          <label for="new-project-desc">Description</label>
+          <textarea name="description" id="new-project-desc" rows="4" placeholder="Brief outline of project scope..." maxlength="500"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fa-solid fa-plus"></i> Create Project
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Right Side: Projects Grid -->
+  <div class="projects-main-content">
+    <h2><i class="fa-solid fa-folder-open"></i> Existing Projects</h2>
+    
+    <div class="projects-grid" style="margin-top: 16px;">
+      <% if (projects.length === 0) { %>
+        <div class="empty-state">No projects available yet. Use the panel on the left to create one!</div>
+      <% } else { %>
+        <% projects.forEach(project => { %>
+          <% 
+            const isOwner = user && project.owner && project.owner._id.toString() === user._id.toString();
+            const dateStr = new Date(project.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          %>
+          <div class="project-card">
+            <div class="project-card-header">
+              <h3><%= project.name %></h3>
+              <span class="badge" style="background-color: var(--color-primary); color: #fff;">Owner: <%= project.owner ? project.owner.username : 'Unknown' %></span>
+            </div>
+            <p class="project-desc"><%= project.description || 'No description provided.' %></p>
+            <div class="project-card-footer">
+              <div class="project-owner">
+                <i class="fa-regular fa-calendar"></i>
+                <span>Created: <%= dateStr %></span>
+              </div>
+              <div class="project-actions">
+                <a href="/projects/<%= project._id %>" class="btn-card-action" title="View Kanban Board">
+                  <i class="fa-solid fa-table-columns"></i> Board
+                </a>
+                <% if (isOwner) { %>
+                  <a href="/projects/<%= project._id %>/edit" class="btn-card-action" title="Edit Project">
+                    <i class="fa-solid fa-pen"></i>
+                  </a>
+                  <!-- POST request for delete is clean, secure, and native -->
+                  <form action="/projects/<%= project._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Warning: Deleting a project will permanently delete all its tasks and comments. Proceed?');">
+                    <button type="submit" class="btn-card-action btn-card-delete" title="Delete Project">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </form>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<style>
+.projects-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+}
+
+.panel-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+}
+
+.panel-card h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 1024px) {
+  .projects-layout {
+    grid-template-columns: 1fr;
+  }
+  .panel-card {
+    position: static;
+  }
+}
+</style>
+
+<%- include('../partials/footer') %>

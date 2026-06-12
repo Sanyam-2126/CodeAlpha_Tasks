@@ -1,0 +1,59 @@
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="alert alert-error animate-fade-in">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <span><%= error %></span>
+  </div>
+<% } %>
+
+<% if (typeof success !== 'undefined' && success) { %>
+  <div class="alert alert-success animate-fade-in">
+    <i class="fa-solid fa-circle-check"></i>
+    <span><%= success %></span>
+  </div>
+<% } %>
+
+<style>
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 24px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  animation: alertFadeIn 0.25s ease-out;
+}
+
+.alert-error {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fee2e2;
+}
+
+.alert-error i {
+  color: #ef4444;
+}
+
+.alert-success {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #d1fae5;
+}
+
+.alert-success i {
+  color: #10b981;
+}
+
+@keyframes alertFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>

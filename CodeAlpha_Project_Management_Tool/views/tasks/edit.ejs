@@ -1,0 +1,83 @@
+<%- include('../partials/header', { pageTitle: 'Edit Task', activeView: 'board' }) %>
+
+<div class="projects-layout" style="display: block; max-width: 600px; margin: 0 auto;">
+  <div class="panel-card">
+    <h2><i class="fa-solid fa-pen-to-square"></i> Edit Task Details</h2>
+
+    <% if (error) { %>
+      <div class="alert alert-error animate-fade-in" style="margin-top: 16px;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span><%= error %></span>
+      </div>
+    <% } %>
+
+    <form action="/tasks/<%= task._id %>/edit" method="POST" class="auth-form" style="padding: 0; margin-top: 24px;">
+      
+      <div class="form-group">
+        <label for="task-title">Task Title <span class="required">*</span></label>
+        <input type="text" name="title" id="task-title" value="<%= task.title %>" required maxlength="100">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-6">
+          <label for="task-project">Project <span class="required">*</span></label>
+          <select name="project" id="task-project" required>
+            <% projects.forEach(p => { %>
+              <option value="<%= p._id %>" <%= task.project.toString() === p._id.toString() ? 'selected' : '' %>><%= p.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group col-6">
+          <label for="task-assignee">Assignee</label>
+          <select name="assignedTo" id="task-assignee">
+            <option value="">Unassigned</option>
+            <% users.forEach(u => { %>
+              <option value="<%= u._id %>" <%= task.assignedTo && task.assignedTo.toString() === u._id.toString() ? 'selected' : '' %>><%= u.username %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-4">
+          <label for="task-status">Status</label>
+          <select name="status" id="task-status">
+            <option value="To Do" <%= task.status === 'To Do' ? 'selected' : '' %>>To Do</option>
+            <option value="In Progress" <%= task.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
+            <option value="Completed" <%= task.status === 'Completed' ? 'selected' : '' %>>Completed</option>
+          </select>
+        </div>
+        <div class="form-group col-4">
+          <label for="task-priority">Priority</label>
+          <select name="priority" id="task-priority">
+            <option value="Low" <%= task.priority === 'Low' ? 'selected' : '' %>>Low</option>
+            <option value="Medium" <%= task.priority === 'Medium' ? 'selected' : '' %>>Medium</option>
+            <option value="High" <%= task.priority === 'High' ? 'selected' : '' %>>High</option>
+          </select>
+        </div>
+        <div class="form-group col-4">
+          <label for="task-due-date">Due Date</label>
+          <% 
+            let dateVal = '';
+            if (task.dueDate) {
+              dateVal = new Date(task.dueDate).toISOString().substring(0, 10);
+            }
+          %>
+          <input type="date" name="dueDate" id="task-due-date" value="<%= dateVal %>">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="task-desc">Description</label>
+        <textarea name="description" id="task-desc" rows="6" maxlength="1000"><%= task.description || '' %></textarea>
+      </div>
+
+      <div class="modal-footer" style="margin-top: 24px;">
+        <a href="/tasks/<%= task._id %>" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

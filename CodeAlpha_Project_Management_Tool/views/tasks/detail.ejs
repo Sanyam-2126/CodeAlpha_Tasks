@@ -1,0 +1,126 @@
+<%- include('../partials/header', { pageTitle: 'Task details', activeView: 'board' }) %>
+
+<!-- Detail Header Row -->
+<div class="view-header-row" style="background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md) var(--radius-md) 0 0; padding: 24px; border-bottom: none; margin-bottom: 0;">
+  <div class="task-detail-header-left">
+    <a href="/projects/<%= task.project ? task.project._id : '' %>" class="badge" id="detail-project-badge" style="background-color: #eff6ff; color: var(--color-primary); margin-bottom: 8px;">
+      <i class="fa-solid fa-folder-open"></i> <%= task.project ? task.project.name : 'Unknown Project' %>
+    </a>
+    <h2 style="font-size: 1.6rem; font-weight: 700; line-height: 1.3;"><%= task.title %></h2>
+  </div>
+  <div class="task-detail-header-right">
+    <a href="/tasks/<%= task._id %>/edit" class="btn-icon btn-detail-edit" title="Edit Task"><i class="fa-solid fa-pen"></i></a>
+    <form action="/tasks/<%= task._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Permanently delete this task and comments?');">
+      <button type="submit" class="btn-icon btn-detail-delete" title="Delete Task"><i class="fa-solid fa-trash-can"></i></button>
+    </form>
+    <a href="/projects/<%= task.project ? task.project._id : '' %>" class="btn btn-secondary btn-sm" style="margin-left: 12px;">
+      <i class="fa-solid fa-arrow-left"></i> Back to Board
+    </a>
+  </div>
+</div>
+
+<!-- Details layout grid -->
+<div class="task-detail-body" style="background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: 0 0 var(--radius-md) var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden;">
+  <!-- Main details (Left) -->
+  <div class="task-detail-main" style="padding: 24px; overflow-y: visible;">
+    <!-- Description section -->
+    <div class="detail-section">
+      <h4 class="section-title"><i class="fa-solid fa-align-left"></i> Description</h4>
+      <div class="detail-description" style="margin-top: 10px;">
+        <%= task.description || 'No description provided.' %>
+      </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="detail-section" style="margin-top: 32px;">
+      <h4 class="section-title"><i class="fa-solid fa-comments"></i> Task Activity & Comments</h4>
+      
+      <!-- New comment input form -->
+      <form action="/comments" method="POST" class="comment-input-row" style="margin-top: 16px; display: flex; gap: 10px;">
+        <!-- Hidden Task ID input -->
+        <input type="hidden" name="task" value="<%= task._id %>">
+        <input type="text" name="content" id="comment-input" placeholder="Type your comment update here..." required maxlength="1000" style="flex-grow: 1;">
+        <button type="submit" class="btn btn-primary" style="padding: 8px 16px;">
+          <i class="fa-regular fa-paper-plane"></i> Post
+        </button>
+      </form>
+
+      <!-- Comments Timeline List -->
+      <div class="comments-list" style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px;">
+        <% if (comments.length === 0) { %>
+          <div class="empty-state">No comments yet. Write a comment to update the team!</div>
+        <% } else { %>
+          <% comments.forEach(comment => { %>
+            <% 
+              const dateObj = new Date(comment.createdAt);
+              const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + 
+                                   ' at ' + dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            %>
+            <div class="comment-item" style="background-color: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 16px; display: flex; gap: 14px;">
+              <div class="avatar avatar-sm" style="flex-shrink: 0;"><%= comment.user ? comment.user.username.charAt(0).toUpperCase() : '?' %></div>
+              <div class="comment-item-body" style="flex-grow: 1;">
+                <div class="comment-item-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <span class="comment-author" style="font-weight: 600; font-size: 0.9rem;"><%= comment.user ? comment.user.username : 'Unknown user' %></span>
+                  <span class="comment-time" style="font-size: 0.75rem; color: var(--text-light);"><%= formattedDate %></span>
+                </div>
+                <p class="comment-text" style="font-size: 0.9rem; color: var(--text-primary); line-height: 1.45; white-space: pre-wrap;"><%= comment.content %></p>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar parameters (Right) -->
+  <div class="task-detail-sidebar" style="background-color: #f8fafc; padding: 24px;">
+    <!-- Inline Status dropdown changer form -->
+    <div class="sidebar-block" style="margin-bottom: 24px;">
+      <span class="block-label" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Status</span>
+      <form action="/tasks/<%= task._id %>/status" method="POST">
+        <select name="status" class="detail-status-select" onchange="this.form.submit()" style="font-weight: 600; padding: 8px; font-size: 0.88rem; width: 100%;">
+          <option value="To Do" <%= task.status === 'To Do' ? 'selected' : '' %>>To Do</option>
+          <option value="In Progress" <%= task.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
+          <option value="Completed" <%= task.status === 'Completed' ? 'selected' : '' %>>Completed</option>
+        </select>
+      </form>
+    </div>
+
+    <div class="sidebar-block" style="margin-bottom: 24px;">
+      <span class="block-label" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Priority</span>
+      <span class="badge-priority <%= task.priority.toLowerCase() %>" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 600; border-radius: 20px; text-transform: capitalize;"><%= task.priority %></span>
+    </div>
+
+    <div class="sidebar-block" style="margin-bottom: 24px;">
+      <span class="block-label" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Due Date</span>
+      <% 
+        const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'Completed';
+        let dateStr = 'No due date';
+        if (task.dueDate) {
+          dateStr = new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+      %>
+      <span class="detail-date <%= isOverdue ? 'overdue' : '' %>" style="font-size: 0.88rem; display: flex; align-items: center; gap: 6px; font-weight: 500;">
+        <i class="fa-regular fa-calendar"></i> <%= dateStr %> <%= isOverdue ? '(Overdue)' : '' %>
+      </span>
+    </div>
+
+    <div class="sidebar-block" style="margin-bottom: 24px;">
+      <span class="block-label" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Assignee</span>
+      <div class="assignee-row" style="display: flex; align-items: center; gap: 8px;">
+        <div class="avatar avatar-sm"><%= task.assignedTo ? task.assignedTo.username.charAt(0).toUpperCase() : '?' %></div>
+        <span style="font-size: 0.88rem; font-weight: 500;"><%= task.assignedTo ? task.assignedTo.username : 'Unassigned' %></span>
+      </div>
+    </div>
+
+    <div class="sidebar-block">
+      <span class="block-label" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Created By</span>
+      <div class="assignee-row" style="display: flex; align-items: center; gap: 8px;">
+        <div class="avatar avatar-sm avatar-owner"><%= task.owner ? task.owner.username.charAt(0).toUpperCase() : '?' %></div>
+        <span style="font-size: 0.88rem; font-weight: 500;"><%= task.owner ? task.owner.username : 'System' %></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

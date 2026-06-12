@@ -1,0 +1,60 @@
+<%- include('partials/header.ejs') %>
+
+<div class="shop-hero">
+  <h1>Welcome to CampusMart</h1>
+  <p>Find quality campus essentials, textbook deals, tech, and student gear at great prices.</p>
+</div>
+
+<div class="catalog-section">
+  <div class="section-header">
+    <h2 class="section-title">Explore Catalog</h2>
+    <span class="product-count"><%= products.length %> Products Available</span>
+  </div>
+
+  <% if (products.length > 0) { %>
+    <div class="products-grid">
+      <% products.forEach(product => { %>
+        <article class="product-card">
+          <!-- Product Image -->
+          <div class="product-image-container">
+            <img src="<%= product.imageUrl %>" alt="<%= product.title %>" class="product-image">
+            <span class="category-badge"><%= product.category %></span>
+          </div>
+
+          <!-- Product Body -->
+          <div class="product-details">
+            <h3 class="product-title"><%= product.title %></h3>
+            <p class="product-price">$<%= product.price.toFixed(2) %></p>
+            <p class="product-desc"><%= product.description.length > 100 ? product.description.substring(0, 95) + '...' : product.description %></p>
+          </div>
+
+          <!-- Product Actions -->
+          <div class="product-actions">
+            <a href="/product/<%= product._id %>" class="btn btn-outline">Details</a>
+            
+            <% if (isLoggedIn) { %>
+              <form action="/cart/add" method="POST">
+                <input type="hidden" name="productId" value="<%= product._id %>">
+                <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+              </form>
+            <% } else { %>
+              <a href="/login" class="btn btn-primary btn-sm login-hint-btn">Add to Cart</a>
+            <% } %>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <!-- Empty State if no products found in the database -->
+    <div class="empty-state">
+      <span class="empty-icon">🔍</span>
+      <h3>No Products Found</h3>
+      <p>We couldn't find any products in our store right now. Check back later!</p>
+      <% if (isAdmin) { %>
+        <a href="/admin/add-product" class="btn btn-primary mt-1">Add First Product</a>
+      <% } %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('partials/footer.ejs') %>

@@ -1,0 +1,95 @@
+<%- include('partials/header.ejs') %>
+
+<div class="cart-page-header">
+  <h1>Your Shopping Cart</h1>
+  <p>Review your items before completing your purchase.</p>
+</div>
+
+<div class="cart-container">
+  <% if (cartItems.length > 0) { %>
+    <div class="cart-grid">
+      <!-- Left side: Items Table/List -->
+      <div class="cart-items-panel">
+        <div class="table-responsive">
+          <table class="cart-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% cartItems.forEach(item => { %>
+                <% if (item.productId) { %>
+                  <tr>
+                    <!-- Product Info Column -->
+                    <td class="cart-td-product">
+                      <div class="cart-product-info">
+                        <img src="<%= item.productId.imageUrl %>" alt="<%= item.productId.title %>" class="cart-item-img">
+                        <div>
+                          <a href="/product/<%= item.productId._id %>" class="cart-item-title"><%= item.productId.title %></a>
+                          <span class="cart-item-cat"><%= item.productId.category %></span>
+                        </div>
+                      </div>
+                    </td>
+                    <!-- Unit Price Column -->
+                    <td>$<%= item.productId.price.toFixed(2) %></td>
+                    <!-- Quantity Column -->
+                    <td>
+                      <!-- Display static quantity for simplicity, or provide increment/decrement forms -->
+                      <span class="cart-quantity-val"><%= item.quantity %></span>
+                    </td>
+                    <!-- Item Subtotal Column -->
+                    <td class="weight-600">$<%= (item.productId.price * item.quantity).toFixed(2) %></td>
+                    <!-- Delete Action Column -->
+                    <td>
+                      <form action="/cart/delete" method="POST">
+                        <input type="hidden" name="productId" value="<%= item.productId._id %>">
+                        <button type="submit" class="btn-remove" title="Remove item">&times; Remove</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% } %>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right side: Cart Summary Panel -->
+      <div class="cart-summary-panel">
+        <div class="summary-card">
+          <h3>Order Summary</h3>
+          <div class="summary-row">
+            <span>Total Items:</span>
+            <span><%= cartCount %></span>
+          </div>
+          <div class="summary-row total-row">
+            <span>Estimated Total:</span>
+            <span class="total-price-val">$<%= totalPrice.toFixed(2) %></span>
+          </div>
+
+          <div class="summary-actions">
+            <form action="/create-order" method="POST">
+              <button type="submit" class="btn btn-primary btn-large btn-block">Place Order</button>
+            </form>
+            <a href="/" class="btn btn-outline btn-block mt-05 text-center">Continue Shopping</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } else { %>
+    <!-- Empty Cart State -->
+    <div class="empty-state">
+      <span class="empty-icon">🛒</span>
+      <h3>Your Cart is Empty</h3>
+      <p>Looks like you haven't added any products to your cart yet.</p>
+      <a href="/" class="btn btn-primary mt-1">Browse Products</a>
+    </div>
+  <% } %>
+</div>
+
+<%- include('partials/footer.ejs') %>

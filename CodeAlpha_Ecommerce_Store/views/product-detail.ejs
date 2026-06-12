@@ -1,0 +1,42 @@
+<%- include('partials/header.ejs') %>
+
+<div class="breadcrumb-container">
+  <a href="/" class="back-link">&larr; Back to Catalog</a>
+</div>
+
+<div class="detail-container">
+  <div class="detail-grid">
+    <!-- Left Column: Product Image -->
+    <div class="detail-image-wrapper">
+      <img src="<%= product.imageUrl %>" alt="<%= product.title %>" class="detail-image">
+    </div>
+
+    <!-- Right Column: Product Content -->
+    <div class="detail-info">
+      <span class="detail-category"><%= product.category %></span>
+      <h1 class="detail-title"><%= product.title %></h1>
+      <p class="detail-price">$<%= product.price.toFixed(2) %></p>
+      
+      <div class="detail-description-section">
+        <h3>Product Description</h3>
+        <p><%= product.description %></p>
+      </div>
+
+      <div class="detail-actions">
+        <% if (isLoggedIn) { %>
+          <form action="/cart/add" method="POST" class="add-to-cart-form">
+            <input type="hidden" name="productId" value="<%= product._id %>">
+            <button type="submit" class="btn btn-primary btn-large">🛒 Add to Shopping Cart</button>
+          </form>
+        <% } else { %>
+          <div class="login-prompt">
+            <p>Please <a href="/login">log in</a> to add items to your cart.</p>
+            <a href="/login" class="btn btn-primary btn-large">Log In to Shop</a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer.ejs') %>
